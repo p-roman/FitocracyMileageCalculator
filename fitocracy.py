@@ -3,7 +3,7 @@ t0ph - 6.10.12
     
 Calculates your total distance ran based on Fitocracy data export, since their site doesn't show you that metric yet.
     
-To use, download this script and a CSV of you running data from Fitocracy (You ->Performance -> Running -> CSV). Put both in a directory, and run the python script.
+To use, download this script and a CSV of you running data from Fitocracy (You ->Performance -> Running -> CSV). Put both in a directory, and run the python script. Combined running data (dist, pace, time, etc.) should all be in one column named 'Combined'.
     
 Loosly based on work http://code.google.com/p/narorumo/source/browse/trunk/fitocracy/fitocracy.py?r=635
 """
@@ -32,12 +32,17 @@ def main():
     csvData = csv.reader(runData, delimiter='|')
     total_distance = 0
     for rowz in csvData:
-        run = rowz[2]
+        run = rowz[2].rstrip()
+        unit = run[-2:].replace(' ', '')
         run = run.replace(' ', '')
-        unit = run[-2:]
-        dist = run[:-2]
+        
+        if unit == 'mi':
+            dist = run[:-2]
+        elif unit == 'm':
+            dist = run[:-1]
+        
         miles = to_miles(dist, unit)
         total_distance += miles
-    print "You have run this many miles on Fitocracy:", total_distance
+    print "\nYou have run this many miles on Fitocracy:", total_distance
 
 if __name__ == "__main__": main()
